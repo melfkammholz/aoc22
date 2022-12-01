@@ -12,6 +12,7 @@ splitOn y xs
   where
     (l, r) = span (/= y) (dropWhile (== y) xs)
 
+mom :: Ord a => [a] -> a
 mom [x] = x
 mom xs  = mom . medians $ xs
   where
@@ -20,6 +21,7 @@ mom xs  = mom . medians $ xs
     medians xs = let (l, r) = splitAt 5 xs
                  in median l : medians r
 
+quickselect :: Ord a => [a] -> Int -> ([a], [a])
 quickselect xs 0 = ([], xs)
 quickselect xs i
   | i < n     = let (l, r) = quickselect ys i
