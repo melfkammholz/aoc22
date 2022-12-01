@@ -1,4 +1,4 @@
-import Data.List (span)
+import Data.List (span, sort)
 import System.IO (isEOF)
 
 allLines :: IO [String]
@@ -20,5 +20,5 @@ main :: IO ()
 main = do
   ls <- allLines
   let gs = map (map read) (splitOn "" ls)
-  print $ maximum (map sum gs)
+  print $ sum (take 3 $ reverse $ sort $ map sum gs)
 
