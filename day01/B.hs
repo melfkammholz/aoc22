@@ -12,9 +12,11 @@ allLines = do
 
 splitOn :: Eq a => a -> [a] -> [[a]]
 splitOn _ [] = []
-splitOn y xs = let (l, r) = span (/= y) xs
-               in if null r then [l]
-                  else l : splitOn y (tail r)
+splitOn y xs
+  | null r    = if null l then [] else [l]
+  | otherwise = l : splitOn y (tail r)
+  where
+    (l, r) = span (/= y) (dropWhile (== y) xs)
 
 main :: IO ()
 main = do
