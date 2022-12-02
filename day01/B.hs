@@ -1,5 +1,4 @@
 import Data.List (span, sort, partition)
-import System.IO (isEOF)
 
 allLines :: IO [String]
 allLines = lines <$> getContents
@@ -16,7 +15,7 @@ mom :: Ord a => [a] -> a
 mom [x] = x
 mom xs  = mom . medians $ xs
   where
-    median xs = sort xs !! (length xs `div` 2)
+    median xs = sort xs !! ((length xs - 1) `div` 2)
     medians [] = []
     medians xs = let (l, r) = splitAt 5 xs
                  in median l : medians r
