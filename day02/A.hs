@@ -16,6 +16,7 @@ pts 'X' = 1
 pts 'Y' = 2
 pts 'Z' = 3
 
+score :: Char -> Char -> Int
 score a b
   | trans a == b = pts b + 3
   | win a == b   = pts b + 6
