@@ -21,6 +21,7 @@ parseMove m = let r1         = drop (length "move ") m
                   (to, _)    = span isDigit r5
               in (read cnt, read from, read to)
 
+combineStackLines :: [String] -> [String]
 combineStackLines ls = map (dropWhile (== ' ')) <$> transpose $ parseStackLine <$> ("  " ++) <$> ls
 
 move :: Int -> Int -> Int -> [String] -> [String]
