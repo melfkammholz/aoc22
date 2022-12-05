@@ -38,6 +38,6 @@ main = do
   let (stackLines, (_:_:moves)) = span (\(_:c:_) -> isAlpha c) ls
   let sts = combineStackLines stackLines
   let after = foldl (\sts (cnt, from, to) -> move cnt from to sts) sts (parseMove <$> moves)
-  let code = foldr (\c st -> head c : st) "" after
+  let code = foldr (\st c -> if null st then c else head st : c) "" after
   print code
 
