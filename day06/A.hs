@@ -1,6 +1,6 @@
 import Data.List (nub)
 
-solve :: Int -> String -> Maybe Int
+solve :: Eq a => Int -> [a] -> Maybe Int
 solve k l = solve' k (take (k - 1) l) (drop (k - 1) l)
   where
     solve' _ _ []    = Nothing
