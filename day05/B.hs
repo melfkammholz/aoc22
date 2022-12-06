@@ -19,17 +19,24 @@ parseMove m = let r1         = drop (length "move ") m
                   (from, r4) = span isDigit r3
                   r5         = drop (length " to ") r4
                   (to, _)    = span isDigit r5
-              in (read cnt, read from, read to)
+              in (read cnt, read from - 1, read to - 1)
 
 combineStackLines :: [String] -> [String]
-combineStackLines ls = map (dropWhile (== ' ')) <$> transpose $ parseStackLine <$> ("  " ++) <$> ls
+combineStackLines ls = map trim <$> transpose $ parseStackLine <$> ("  " ++) <$> ls
+  where
+    trim = dropWhile (== ' ')
+
+adjustAt :: Int -> (a -> a) -> [a] -> [a]
+adjustAt _ _ []     = []
+adjustAt 0 f (x:xs) = f x : xs
+adjustAt i f (x:xs) = x : adjustAt (i - 1) f xs
 
 move :: Int -> Int -> Int -> [String] -> [String]
 move cnt from to sts = push $ pop sts
   where
-    e        = take cnt (sts !! (from - 1))
-    pop  sts = map (\(n, st) -> if n == from then drop (length e) st else st) (zip [1..] sts)
-    push sts = map (\(n, st) -> if n == to then e ++ st else st) (zip [1..] sts)
+    e    = take cnt (sts !! from)
+    pop  = adjustAt from (drop cnt)
+    push = adjustAt to (e ++)
 
 main :: IO ()
 main = do
