@@ -11,7 +11,6 @@ allLines = lines <$> getContents
 buildFS :: [String] -> FS Int
 buildFS = evalState (go (Dir "/" []))
   where
-    go :: FS Int -> State [String] (FS Int)
     go fs = do
       ls <- get
       if null ls
@@ -26,8 +25,6 @@ buildFS = evalState (go (Dir "/" []))
               fs' <- buildFS' fs
               go fs'
 
-
-    buildFS' :: FS Int -> State [String] (FS Int)
     buildFS' cwd = do
       ls <- get
       if null ls || isFile cwd
