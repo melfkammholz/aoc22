@@ -68,9 +68,7 @@ buildFS = evalState (go (Dir "/" []))
       put ls'
       return es
 
-    containsDir n []             = False
-    containsDir n ((Dir m _):es) = n == m || containsDir n es
-    containsDir n (_:es)         = containsDir n es
+    containsDir n = any (hasDirName n)
 
     hasDirName n (File _ _) = False
     hasDirName n (Dir m _)  = n == m
