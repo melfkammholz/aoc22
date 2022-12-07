@@ -75,14 +75,7 @@ buildFS = evalState (go (Dir "/" []))
     hasDirName n (File _ _) = False
     hasDirName n (Dir m _)  = n == m
 
-    modifyDirInList []             _ _ = return []
-    modifyDirInList (e:es) n f
-      | hasDirName n e = do
-        e' <- f e
-        return (e':es)
-      | otherwise = do
-        es' <- modifyDirInList es n f
-        return (e:es')
+    modifyDirInList es n f = mapM (\e -> if hasDirName n e then f e else return e) es
 
     buildList :: [String] -> [FS Int]
     buildList []              = []
