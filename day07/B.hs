@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 import Control.Monad.State
 import Data.Char (isSpace)
 import Data.List (isPrefixOf, sort)
@@ -32,28 +33,28 @@ buildFS = evalState (go (Dir "/" []))
       else do
         let (l:ls')    = ls
         let (Dir n dl) = cwd
-        if l == "$ ls"
-          then do
-             put ls'
-             es <- takeNonCmds
-             let dl' = buildList es
-             buildFS' (Dir n dl')
-          else if l == "$ cd .."
-            then do
-             put ls'
-             return cwd
-            else if l == "$ cd /"
-              then return cwd
-              else do
-                put ls'
-                let m = drop (length "$ cd ") l
-                if containsDir m dl
-                  then do
-                    dl' <- modifyDirInList dl m buildFS'
-                    buildFS' (Dir n dl')
-                  else do
-                    sd <- buildFS' (Dir m [])
-                    return (Dir n (sd:dl))
+        if | l == "$ ls" ->
+             do
+               put ls'
+               es <- takeNonCmds
+               let dl' = buildList es
+               buildFS' (Dir n dl')
+           | l == "$ cd .." ->
+             do
+               put ls'
+               return cwd
+           | l == "$ cd /" -> return cwd
+           | otherwise ->
+             do
+               put ls'
+               let m = drop (length "$ cd ") l
+               if containsDir m dl
+                 then do
+                   dl' <- modifyDirInList dl m buildFS'
+                   buildFS' (Dir n dl')
+                 else do
+                   sd <- buildFS' (Dir m [])
+                   return (Dir n (sd:dl))
 
     isCmd []      = False
     isCmd ('$':_) = True
