@@ -1,3 +1,5 @@
+import Control.Monad (zipWithM)
+import Control.Monad.State
 import Data.Char (ord)
 import Data.List (transpose)
 
@@ -5,10 +7,16 @@ allLines :: IO [String]
 allLines = lines <$> getContents
 
 visibleRow :: [Int] -> [Bool] -> [Bool]
-visibleRow = go (-1)
+visibleRow xs ss = evalState go (-1)
   where
-    go l []     []      = []
-    go l (x:xs) (s:ss)  = (s || x > l) : go (max l x) xs ss
+    go = zipWithM check xs ss
+
+    check x s = do
+      l <- get
+      let r = s || x > l
+      put (max l x)
+      return r
+
 
 visible :: [[Int]] -> [[Bool]] -> [[Bool]]
 visible = zipWith visibleRow
