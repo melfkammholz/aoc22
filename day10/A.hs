@@ -16,22 +16,6 @@ runIns :: [Int] -> Instruction -> [Int]
 runIns xs@(x:_) Noop     = x : xs
 runIns xs@(x:_) (AddX y) = (x + y) : x : xs
 
-crt :: [Int] -> String
-crt = crt' 1
-  where
-    crt' _ []     = ""
-    crt' i (x:xs) = if i `elem` [x, x + 1, x + 2]
-                    then '#' : crt' ((i + 1) `mod` 40) xs
-                    else '.' : crt' ((i + 1) `mod` 40) xs
-
-chunks :: Int -> [a] -> [[a]]
-chunks _ [] = []
-chunks n xs = let (l, r) = splitAt n xs
-              in l : chunks n r
-
-printCrt :: String -> IO ()
-printCrt = mapM_ putStrLn . chunks 40
-
 main :: IO ()
 main = do
   ls <- allLines
