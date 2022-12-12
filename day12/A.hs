@@ -5,7 +5,6 @@ import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
 data Grid a = Grid (Vector a) Int Int
-  deriving Show
 
 type Pos = (Int, Int)
 
@@ -21,7 +20,7 @@ toPos m n z = (z `div` n, z `mod`n)
 findIndex :: (a -> Bool) -> Grid a -> Maybe Pos
 findIndex p (Grid v m n) = toPos m n <$> Vector.findIndex p v
 
-adjust :: (a -> a) -> (Int, Int) -> Grid a -> Grid a
+adjust :: (a -> a) -> Pos -> Grid a -> Grid a
 adjust f (y, x) (Grid v m n) = Grid (v Vector.// [(y * n + x, f $ v Vector.! (y * n + x))]) m n
 
 bfs :: Grid Char -> Int
@@ -58,11 +57,6 @@ bfs g@(Grid v m n) = go g (Seq.singleton s) d ! e
 
     s  = fromJust $ findIndex (== 'S') g
     e  = fromJust $ findIndex (== 'E') g
-
-chunks :: Int -> [a] -> [[a]]
-chunks _ [] = []
-chunks n xs = let (l, r) = splitAt n xs
-              in l : chunks n r
 
 main :: IO ()
 main = do
