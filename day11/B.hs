@@ -1,11 +1,10 @@
 import Prelude hiding (round)
-import Control.Monad.State
 import Control.Monad (void)
 import Data.List (sort)
 import qualified Data.Map as Map
 import Data.Maybe (fromJust)
-import Text.Parsec (Parsec, (<|>), parse, many, many1, manyTill, sepBy, anyChar, oneOf)
-import Text.Parsec.Char (string, newline, digit, spaces, letter, char)
+import Text.Parsec (Parsec, (<|>), parse, many, many1, sepBy, oneOf)
+import Text.Parsec.Char (string, digit, spaces, char)
 
 type Parser = Parsec String ()
 
@@ -32,7 +31,7 @@ op = do
   left <- string "old" <|> many1 digit
   oper <- spaces *> oneOf "+*" <* spaces
   right <- string "old" <|> many1 digit
- 
+
   case (left, right) of
     ("old", "old") -> return $ \x -> mop oper x x
     ("old", _)     -> return (flip (mop oper) $ read right)
@@ -86,7 +85,7 @@ round ms = let ns = name <$> ms
       let (Monkey _ xs op test t) = fromJust $ Map.lookup n m
           m' = Map.insert n (Monkey n [] op test (t + length xs)) m
           throw x = Map.adjust (add $ op x) (makeTest test $ op x)
-          m'' = foldr throw m' xs 
+          m'' = foldr throw m' xs
       in go ns m''
 
     add x (Monkey n xs op test t) = Monkey n (x : xs) op test t
