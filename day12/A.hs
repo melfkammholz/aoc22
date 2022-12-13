@@ -15,7 +15,7 @@ create m n x = Grid (Vector.fromList $ replicate (m * n) x) m n
 (Grid v _ n) ! (y, x) = v Vector.! (y * n + x)
 
 toPos :: Int -> Int -> Int -> Pos
-toPos m n z = (z `div` n, z `mod`n)
+toPos m n z = (z `div` n, z `mod` n)
 
 findIndex :: (a -> Bool) -> Grid a -> Maybe Pos
 findIndex p (Grid v m n) = toPos m n <$> Vector.findIndex p v
