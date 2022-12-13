@@ -12,21 +12,22 @@ type Parser = Parsec String ()
 spaces :: Parser ()
 spaces = skipMany $ oneOf " \n\r"
 
+lexeme :: Parser a -> Parser a
+lexeme p = p <* spaces
+
 commaSep :: Parser a -> Parser [a]
-commaSep p = p `sepBy` (char ',' *> spaces)
+commaSep p = p `sepBy` (lexeme $ char ',')
 
 leaf :: Parser Tree
-leaf = Leaf . read <$> many1 digit
+leaf = Leaf . read <$> (lexeme $ many1 digit)
 
 tree :: Parser Tree
-tree = Tree <$> (string "[" *> commaSep (leaf <|> tree) <* string "]")
+tree = Tree <$> (lexeme $ string "[" *> commaSep (leaf <|> tree) <* string "]")
 
 pair :: Parser (Tree, Tree)
 pair = do
   t1 <- tree
-  spaces
   t2 <- tree
-  spaces
   return (t1, t2)
 
 pairs :: Parser [(Tree, Tree)]
