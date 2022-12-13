@@ -50,6 +50,6 @@ main :: IO ()
 main = do
   contents <- getContents
   let (Right ps) = parse pairs "" contents
-  let is = map (\(p, i) -> if uncurry (<=) p then i else 0) (zip (uncurry morph <$> ps) [1..])
+  let is = snd <$> filter (uncurry (<=) . fst) (zip (uncurry morph <$> ps) [1..])
   print $ sum is
 
