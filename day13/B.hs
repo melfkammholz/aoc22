@@ -31,11 +31,14 @@ morph :: Tree -> Tree -> (Tree, Tree)
 morph l1@(Leaf _) l2@(Leaf _) = (l1, l2)
 morph (Tree ts1)  l2@(Leaf _) = morph (Tree ts1) (Tree [l2])
 morph l1@(Leaf _) (Tree ts2)  = morph (Tree [l1]) (Tree ts2)
-morph (Tree ts1)  (Tree ts2)  = let ps   = zipWith morph ts1 ts2
-                                    n    = length ps
-                                    ts1' = (fst <$> ps) ++ (drop n ts1)
-                                    ts2' = (snd <$> ps) ++ (drop n ts2)
+morph (Tree ts1)  (Tree ts2)  = let (ts1', ts2') = zipzap morph ts1 ts2
                                 in (Tree ts1', Tree ts2')
+  where
+    zipzap _ xs []         = (xs, [])
+    zipzap _ [] ys         = ([], ys)
+    zipzap f (x:xs) (y:ys) = let (x', y')   = f x y
+                                 (xs', ys') = zipzap f xs ys
+                              in (x' : xs', y' : ys')
 
 main :: IO ()
 main = do
