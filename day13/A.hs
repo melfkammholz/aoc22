@@ -1,4 +1,5 @@
 import Control.Monad (void)
+import Data.Bifunctor (bimap)
 import Data.List (findIndex, sortBy)
 import Data.Maybe (fromJust)
 import Text.Parsec (Parsec, parse, (<|>), skipMany, many1, sepBy)
@@ -37,14 +38,12 @@ morph :: Tree -> Tree -> (Tree, Tree)
 morph l1@(Leaf _) l2@(Leaf _) = (l1, l2)
 morph (Tree ts1)  l2@(Leaf _) = morph (Tree ts1) (Tree [l2])
 morph l1@(Leaf _) (Tree ts2)  = morph (Tree [l1]) (Tree ts2)
-morph (Tree ts1)  (Tree ts2)  = let (ts1', ts2') = zipzap morph ts1 ts2
-                                in (Tree ts1', Tree ts2')
+morph (Tree ts1)  (Tree ts2)  = bimap Tree Tree (zipzap morph ts1 ts2)
   where
-    zipzap _ xs []         = (xs, [])
-    zipzap _ [] ys         = ([], ys)
-    zipzap f (x:xs) (y:ys) = let (x', y')   = f x y
-                                 (xs', ys') = zipzap f xs ys
-                              in (x' : xs', y' : ys')
+    zipzap _ xs     []     = (xs, [])
+    zipzap _ []     ys     = ([], ys)
+    zipzap f (x:xs) (y:ys) = let (x', y') = f x y
+                             in bimap (x':) (y':) (zipzap f xs ys)
 
 main :: IO ()
 main = do
