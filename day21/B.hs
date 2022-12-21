@@ -77,8 +77,8 @@ binarySearch m l r =
                  rv  = right $ m'' Map.! r
              in (lv, rv)
 
-    monoInc = let (lv1, rv1) = eval (-1)
-                  (lv2, rv2)  = eval 1
+    monoInc = let (lv1, rv1) = eval 1
+                  (lv2, rv2)  = eval 10000000000
               in lv1 <= lv2 && rv1 <= rv2
 
     check mi = let (lv, rv) = eval mi
