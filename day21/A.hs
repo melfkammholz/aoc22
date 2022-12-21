@@ -1,8 +1,6 @@
-import Control.Exception (assert)
 import Data.Either (fromRight)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Debug.Trace (traceShowId, trace)
 import Text.Parsec (Parsec, parse, many1, manyTill, skipMany, oneOf, (<|>), try)
 import Text.Parsec.Char (string, digit, char, letter)
 
@@ -41,7 +39,6 @@ right = fromRight (error "should not happen")
 unsafeEval :: String -> Map String (Either Node Integer) -> Map String (Either Node Integer)
 unsafeEval s m = go s m
   where
-    go :: String -> Map String (Either Node Integer) -> Map String (Either Node Integer)
     go s m =
       let n = m Map.! s
       in case n of
