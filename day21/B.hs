@@ -36,23 +36,28 @@ node = try eq <|> num
 right :: Either a b -> b
 right = fromRight (error "should not happen")
 
+-- partially evaluates tree
 unsafeEval :: String -> Map String (Either Node Integer) -> Map String (Either Node Integer)
 unsafeEval s m = go s m
   where
     go s m =
       let n = m Map.! s
       in case n of
+        Right _              -> m
+        Left (Num "humn" x)  -> m
         Left (Num _ x)       -> Map.insert s (Right x) m
         Left (Node _ l op r) ->
-          let m'  = go l m
-              m'' = go r m'
-              lv  = right $ m'' Map.! l
-              rv  = right $ m'' Map.! r
-          in case op of
-            Plus  -> Map.insert s (Right $ lv + rv) m''
-            Minus -> Map.insert s (Right $ lv - rv) m''
-            Mult  -> Map.insert s (Right $ lv * rv) m''
-            Div   -> Map.insert s (Right $ lv `div` rv) m''
+          let m'   = go l m
+              m''  = go r m'
+              elv  = m'' Map.! l
+              erv  = m'' Map.! r
+          in case (elv, erv) of
+            (Right lv, Right rv) -> case op of
+              Plus  -> Map.insert s (Right $ lv + rv) m''
+              Minus -> Map.insert s (Right $ lv - rv) m''
+              Mult  -> Map.insert s (Right $ lv * rv) m''
+              Div   -> Map.insert s (Right $ lv `div` rv) m''
+            (_, _)               -> m''
 
 
 buildMap :: [Node] -> Map String (Either Node Integer)
@@ -70,7 +75,7 @@ binarySearch m l r =
       then binarySearch m l mi
       else binarySearch m (mi + 1) r
   where
-    eval x = let m'  = Map.insert "humn" (Left $ Num "humn" x) m
+    eval x = let m'  = Map.insert "humn" (Right x) m
                  m'' = unsafeEval "root" m'
                  (Left (Node _ l _ r)) = m Map.! "root"
                  lv  = right $ m'' Map.! l
@@ -93,6 +98,6 @@ main = do
     Left err -> print err
     Right ns -> do
       let m  = buildMap ns
-      print $ binarySearch m 0 (toInteger (maxBound :: Int))
+      print $ binarySearch (unsafeEval "root" m) 0 (toInteger (maxBound :: Int))
 
 
